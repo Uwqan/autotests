@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Контактная форма</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 520px;
+               margin: 40px auto; background: #f4f4f4; }
+        .box { background: #fff; padding: 24px; border-radius: 10px;
+               box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        label { display: block; margin-top: 12px; font-weight: 600; }
+        input, textarea { width: 100%; padding: 8px; font-size: 15px;
+                          box-sizing: border-box; }
+        button { margin-top: 16px; padding: 10px 18px; font-size: 16px; cursor: pointer; }
+        .error { color: #c0392b; font-size: 13px; margin-top: 4px; min-height: 16px; }
+        #success { color: #27ae60; font-weight: bold; margin-top: 16px; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <h2>Связаться с нами</h2>
+    <form id="contact-form">
+        <label for="name">Имя *</label>
+        <input type="text" id="name" name="name">
+        <div class="error" id="name-error"></div>
+
+        <label for="email">Email *</label>
+        <input type="text" id="email" name="email">
+        <div class="error" id="email-error"></div>
+
+        <label for="subject">Тема *</label>
+        <input type="text" id="subject" name="subject">
+        <div class="error" id="subject-error"></div>
+
+        <label for="message">Сообщение *</label>
+        <textarea id="message" name="message" rows="5"></textarea>
+        <div class="error" id="message-error"></div>
+
+        <button type="button" id="submit-btn">Отправить</button>
+    </form>
+    <div id="success"></div>
+</div>
+
+<script>
+    document.getElementById('submit-btn').addEventListener('click', async () => {
+        ['name','email','subject','message'].forEach(f =>
+            document.getElementById(f + '-error').innerText = '');
+        document.getElementById('success').innerText = '';
+
+        const payload = {
+            name:    document.getElementById('name').value,
+            email:   document.getElementById('email').value,
+            subject: document.getElementById('subject').value,
+            message: document.getElementById('message').value,
+        };
+
+        const resp = await fetch('/api/contact', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        const data = await resp.json();
+
+        if (resp.ok) {
+            document.getElementById('success').innerText = data.message;
+        } else {
+            for (const [field, msg] of Object.entries(data.errors)) {
+                document.getElementById(field + '-error').innerText = msg;
+            }
+        }
+    });
+</script>
+</body>
+</html>
