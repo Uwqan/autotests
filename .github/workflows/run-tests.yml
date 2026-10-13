@@ -26,9 +26,9 @@ jobs:
 
       - name: Start Flask server
         run: |
-          nohup python app.py > flask.log 2>&1 &
+          nohup python ConctactPage/app.py > flask.log 2>&1 &
           sleep 3
           curl -s http://127.0.0.1:5000/ > /dev/null && echo "Server is up"
 
       - name: Run tests
-        run: pytest test.py -v
+        run: pytest ConctactPage/test.py -v
